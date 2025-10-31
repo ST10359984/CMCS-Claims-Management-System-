@@ -1,0 +1,6 @@
+@CMCS__Claims_Management_System__HostAddress = http://localhost:5163
+
+GET {{CMCS__Claims_Management_System__HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
