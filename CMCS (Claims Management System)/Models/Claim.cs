@@ -4,7 +4,6 @@ public class Claim
 {
     [Key]
     public int ClaimID { get; set; }
-
     public string UserID { get; set; } = string.Empty;
     public string Month { get; set; } = string.Empty;
     public decimal TotalHours { get; set; }

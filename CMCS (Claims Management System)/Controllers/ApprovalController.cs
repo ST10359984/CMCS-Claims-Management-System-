@@ -18,7 +18,6 @@ public class ApprovalController : Controller
 
     public async Task<IActionResult> Dashboard()
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var currentUserRole = User.IsInRole("Programme Coordinator") ? "Programme Coordinator" : "Academic Manager";
 
         IQueryable<Claim> pendingClaims = _context.Claims
@@ -142,5 +141,5 @@ public class ApprovalController : Controller
 public class ClaimReviewViewModel
 {
     public Claim Claim { get; set; }
-    public string LecturerName { get; set; }
+    public string LecturerName { get; set; } = string.Empty;
 }
