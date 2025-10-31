@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Claim>
+
+@{
+    ViewData["Title"] = "My Claims Status Tracker";
+}
+
+<h2>My Claims Status Tracker</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You have not submitted any claims yet.</div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Month</th>
+                <th>Total Amount</th>
+                <th>Total Hours</th>
+                <th>Current Status</th>
+                <th>View History</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var badgeClass = item.Status switch
+                {
+                    "Pending" => "bg-warning",
+                    "Coordinator Approved" => "bg-primary",
+                    "Rejected" => "bg-danger",
+                    "Approved" => "bg-success",
+                    _ => "bg-secondary"
+                };
+
+                <tr>
+                    <td>@item.ClaimID</td>
+                    <td>@item.Month</td>
+                    <td>R @item.TotalAmount.ToString("N2")</td>
+                    <td>@item.TotalHours</td>
+                    <td><span class="badge @badgeClass">@item.Status</span></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#historyModal_@item.ClaimID">
+                            View History
+                        </button>
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="historyModal_@item.ClaimID" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="historyModalLabel">Approval History for Claim #@item.ClaimID</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @if (item.Approvals == null || !item.Approvals.Any())
+                                {
+                                    <p>No approval decisions recorded yet. Status is @item.Status.</p>
+                                }
+                                else
+                                {
+                                    <ul class="list-group">
+                                        @foreach (var approval in item.Approvals.OrderBy(a => a.Date))
+                                        {
+                                            var decisionClass = approval.Decision == "Approve" ? "list-group-item-success" : "list-group-item-danger";
+                                            <li class="list-group-item @decisionClass">
+                                                <strong>@approval.Role: @approval.Decision</strong> on @approval.Date.ToShortDateString()<br />
+                                                Comments: @(string.IsNullOrEmpty(approval.Comments) ? "N/A" : approval.Comments)
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+}

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMCS (Claims Management System)", "CMCS (Claims Management System)\CMCS (Claims Management System).csproj", "{BDFDD0D4-7F3A-437D-B128-F81E94F0BB18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMCS.Tests", "CMCS.Tests\CMCS.Tests.csproj", "{49D9663B-D3C2-4237-B6E9-C0041C29647B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BDFDD0D4-7F3A-437D-B128-F81E94F0BB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDFDD0D4-7F3A-437D-B128-F81E94F0BB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDFDD0D4-7F3A-437D-B128-F81E94F0BB18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D9663B-D3C2-4237-B6E9-C0041C29647B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D9663B-D3C2-4237-B6E9-C0041C29647B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D9663B-D3C2-4237-B6E9-C0041C29647B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D9663B-D3C2-4237-B6E9-C0041C29647B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -83,7 +83,8 @@ public class ApprovalController : Controller
 
         if (claim == null || claim.Status.EndsWith("Approved") || claim.Status == "Rejected")
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "Claim not found or decision has already been finalized.";
+            return RedirectToAction(nameof(Dashboard));
         }
 
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -100,28 +101,40 @@ public class ApprovalController : Controller
             return RedirectToAction(nameof(Dashboard));
         }
 
-        if (decision == "Approve")
+        try
         {
-            claim.Status = currentUserRole == "Programme Coordinator" ? "Coordinator Approved" : "Approved";
+            if (decision == "Approve")
+            {
+                claim.Status = currentUserRole == "Programme Coordinator" ? "Coordinator Approved" : "Approved";
+            }
+            else if (decision == "Reject")
+            {
+                claim.Status = "Rejected";
+            }
+
+            var approval = new Approval
+            {
+                ClaimID = claimId,
+                ApproverID = currentUserId,
+                Role = currentUserRole,
+                Decision = decision,
+                Date = DateTime.Now,
+                Comments = comments
+            };
+            _context.Approvals.Add(approval);
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Claim {claimId} was successfully {decision}d.";
         }
-        else if (decision == "Reject")
+        catch (DbUpdateException)
         {
-            claim.Status = "Rejected";
+            TempData["ErrorMessage"] = $"A database error prevented the decision on Claim {claimId}. Please try again.";
+        }
+        catch (Exception)
+        {
+            TempData["ErrorMessage"] = $"A system error occurred while making the decision on Claim {claimId}.";
         }
 
-        var approval = new Approval
-        {
-            ClaimID = claimId,
-            ApproverID = currentUserId,
-            Role = currentUserRole,
-            Decision = decision,
-            Date = DateTime.Now,
-            Comments = comments
-        };
-        _context.Approvals.Add(approval);
-
-        await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = $"Claim {claimId} was successfully {decision}d.";
         return RedirectToAction(nameof(Dashboard));
     }
 }
