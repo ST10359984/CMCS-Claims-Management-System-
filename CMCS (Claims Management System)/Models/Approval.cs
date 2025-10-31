@@ -5,12 +5,13 @@ public class Approval
     [Key]
     public int ApprovalID { get; set; }
     public int ClaimID { get; set; }
-    public int ApproverID { get; set; }
-    public string Role { get; set; }
-    public string Decision { get; set; }
-    public DateTime Date { get; set; }
-    public string Comments { get; set; }
 
-    public Claim Claim { get; set; }
-    public User Approver { get; set; }
+    public string ApproverID { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+    public string Decision { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
+    public string Comments { get; set; } = string.Empty;
+
+
+    public Claim? Claim { get; set; }
 }
