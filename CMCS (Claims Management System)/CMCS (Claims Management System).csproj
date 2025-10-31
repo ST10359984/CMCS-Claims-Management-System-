@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Views\Claims\Submit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Views\Claims\Submit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 

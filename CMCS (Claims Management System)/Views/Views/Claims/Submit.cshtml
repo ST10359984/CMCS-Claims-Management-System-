@@ -1,0 +1,144 @@
+﻿@model ClaimSubmissionViewModel
+
+@{
+    ViewData["Title"] = "Submit New Claim";
+}
+
+<h2>Submit New Claim</h2>
+<hr />
+
+<form asp-action="Submit" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Month" class="control-label"></label>
+                <input asp-for="Month" class="form-control" value="@DateTime.Now.ToString(" yyyy-MM")" type="month" />
+                <span asp-validation-for="Month" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="HourlyRate" class="control-label"></label>
+                <input asp-for="HourlyRate" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="HourlyRate" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mt-4">Hours Breakdown (Claim Details)</h4>
+    <div id="details-container">
+        @for (int i = 0; i < Model.Details.Count; i++)
+        {
+        <div class="row detail-item border p-3 mb-2">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="Details[i].Date"></label>
+                    <input asp-for="Details[i].Date" class="form-control" type="date" />
+                    <span asp-validation-for="Details[i].Date" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label asp-for="Details[i].HoursWorked"></label>
+                    <input asp-for="Details[i].HoursWorked" class="form-control" type="number" step="0.5" />
+                    <span asp-validation-for="Details[i].HoursWorked" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label asp-for="Details[i].Description"></label>
+                    <input asp-for="Details[i].Description" class="form-control" />
+                    <span asp-validation-for="Details[i].Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+                <button type="button" class="btn btn-danger btn-sm remove-detail">Remove</button>
+            </div>
+        </div>
+        }
+    </div>
+    <button type="button" id="add-detail" class="btn btn-secondary btn-sm mb-4">Add Another Session</button>
+
+    <h4 class="mt-4">Supporting Documents (PDF/Image/Office Formats Only)</h4>
+    <div class="form-group">
+        <label asp-for="SupportingDocuments" class="control-label"></label>
+        <input asp-for="SupportingDocuments" class="form-control" type="file" multiple />
+        <span asp-validation-for="SupportingDocuments" class="text-danger"></span>
+        <small class="form-text text-muted">Max size 5MB per file.</small>
+    </div>
+
+    <div class="form-group mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">Submit Claim</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+        document.getElementById('add-detail').addEventListener('click', function () {
+            const container = document.getElementById('details-container');
+            const index = container.children.length;
+
+            const html = `
+                <div class="row detail-item border p-3 mb-2">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="Details_${index}__Date">Date</label>
+                            <input name="Details[${index}].Date" class="form-control" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="Details_${index}__HoursWorked">Hours Worked</label>
+                            <input name="Details[${index}].HoursWorked" class="form-control" type="number" step="0.5" />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="Details_${index}__Description">Description</label>
+                            <input name="Details[${index}].Description" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger btn-sm remove-detail">Remove</button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+
+            // Re-attach listeners for new remove button
+            attachRemoveListeners();
+        });
+
+        function attachRemoveListeners() {
+            document.querySelectorAll('.remove-detail').forEach(button => {
+                button.onclick = function() {
+                    if (document.querySelectorAll('.detail-item').length > 1) {
+                        this.closest('.detail-item').remove();
+                        // Re-index inputs after removal
+                        reindexDetails();
+                    } else {
+                        alert("You must have at least one session detail.");
+                    }
+                };
+            });
+        }
+
+        function reindexDetails() {
+            document.querySelectorAll('#details-container .detail-item').forEach((item, index) => {
+                item.querySelectorAll('input, select, textarea').forEach(input => {
+                    const name = input.name;
+                    if (name) {
+                        input.name = name.replace(/Details\[\d+\]/g, `Details[${index}]`);
+                        input.id = input.id.replace(/Details_\d+__/g, `Details_${index}__`);
+                    }
+                });
+            });
+        }
+
+        attachRemoveListeners();
+</script>
+}
