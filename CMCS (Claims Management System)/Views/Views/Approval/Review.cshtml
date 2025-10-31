@@ -38,18 +38,7 @@
         {
             <p>No supporting documents uploaded.</p>
         }
-        else
-        {
-            <ul class="list-group">
-                @foreach (var doc in Model.Documents)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @Path.GetFileName(doc.FilePath)
-                        <a href="@Url.Content(doc.FilePath.Replace("~/", "/"))" target="_blank" class="btn btn-sm btn-outline-primary">View/Download</a>
-                    </li>
-                }
-            </ul>
-        }
+        
     </div>
 </div>
 
