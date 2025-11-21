@@ -1,0 +1,87 @@
+@model List<CMCS__Claims_Management_System_.Models.Claim>
+
+@{
+    ViewData["Title"] = "Approved Claims Report";
+}
+
+<h2>Approved Claims Report</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No approved claims found.</div>
+}
+else
+{
+    <button id="exportCsv" class="btn btn-success mb-3">Export to CSV</button>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>User</th>
+                <th>Month</th>
+                <th>Hourly Rate</th>
+                <th>Total Hours</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Details</th>
+                <th>Approvals</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.ClaimID</td>
+                    <td>@claim.UserID</td>
+                    <td>@claim.Month</td>
+                    <td>@claim.HourlyRate.ToString("C")</td>
+                    <td>@claim.TotalHours</td>
+                    <td>@claim.TotalAmount.ToString("C")</td>
+                    <td>@claim.Status</td>
+                    <td>
+                        <ul>
+                            @foreach (var d in claim.ClaimDetails)
+                            {
+                                <li>@d.Date.ToShortDateString() - @d.HoursWorked hrs - @d.Description</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            @if (claim.Approvals != null)
+                            {
+                                foreach (var a in claim.Approvals)
+                                {
+                                    <li>@a.Role: @a.Decision (@a.Date.ToShortDateString()) - @a.Comments</li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+<script>
+    document.getElementById('exportCsv').addEventListener('click', function() {
+        let rows = [];
+        const table = document.querySelector('table');
+        table.querySelectorAll('tr').forEach(tr => {
+            let row = [];
+            tr.querySelectorAll('th, td').forEach(cell => {
+                row.push('"' + cell.innerText.replace(/"/g, '""') + '"');
+            });
+            rows.push(row.join(','));
+        });
+        const csv = rows.join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'ApprovedClaimsReport.csv';
+        link.click();
+    });
+</script>
+}

@@ -1,0 +1,72 @@
+@model IEnumerable<Claim>
+
+@{
+    ViewData["Title"] = "Claims Dashboard";
+}
+
+<h2>Claims Dashboard</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No claims pending your review.</div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Lecturer</th>
+                <th>Month</th>
+                <th>Total Hours</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var claim in Model)
+            {
+                var badgeClass = claim.Status switch
+                {
+                    "Submitted" => "bg-warning",
+                    "Verified" => "bg-primary",
+                    "Approved" => "bg-success",
+                    "Rejected" => "bg-danger",
+                    _ => "bg-secondary"
+                };
+                <tr>
+                    <td>@claim.ClaimID</td>
+                    <td>@claim.UserID</td>
+                    <td>@claim.Month.ToString("yyyy-MM")</td>
+                    <td>@claim.TotalHours</td>
+                    <td>R @claim.TotalAmount.ToString("N2")</td>
+                    <td><span class="badge @badgeClass">@claim.Status</span></td>
+                    <td>
+                        @if(claim.Status == "Verified" && User.IsInRole("Academic Manager"))
+                        {
+                            <form asp-action="ApproveRejectClaim" method="post" class="d-flex gap-1">
+                                <input type="hidden" name="claimId" value="@claim.ClaimID" />
+                                <input type="text" name="comments" class="form-control form-control-sm" placeholder="Comments" />
+                                <button type="submit" name="approve" value="true" class="btn btn-sm btn-success">Approve</button>
+                                <button type="submit" name="approve" value="false" class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                        }
+                        else if(claim.Status == "Submitted" && User.IsInRole("Coordinator"))
+                        {
+                            <form asp-action="VerifyClaim" method="post">
+                                <input type="hidden" name="claimId" value="@claim.ClaimID" />
+                                <button type="submit" class="btn btn-sm btn-primary">Verify</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No action</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

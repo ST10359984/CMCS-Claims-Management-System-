@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ClaimReviewViewModel>
+
+@{
+    var currentRole = ViewData["CurrentRole"] as string;
+    ViewData["Title"] = $"{currentRole} Dashboard";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<h3>Pending Claims for @currentRole Review</h3>
+
+@if (!Model.Any())
+{
+    <p>No claims currently require your review.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Lecturer</th>
+                <th>Month</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Claim.ClaimID</td>
+                    <td>@item.LecturerName</td>
+                    <td>@item.Claim.Month</td>
+                    <td>R @item.Claim.TotalAmount.ToString("N2")</td>
+                    <td><span class="badge bg-warning">@item.Claim.Status</span></td>
+                    <td>
+                        <a asp-action="Review" asp-route-id="@item.Claim.ClaimID" class="btn btn-sm btn-info">Review Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,59 @@
+@model IEnumerable<CMCS__Claims_Management_System_.Models.Claim>
+
+@{
+    ViewData["Title"] = "Approved Claims Report";
+}
+
+<h2>Approved Claims Report</h2>
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No approved claims available.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Lecturer</th>
+                <th>Month</th>
+                <th>Total Hours</th>
+                <th>Total Amount</th>
+                <th>Approval History</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.ClaimID</td>
+                    <td>@claim.UserID</td>
+                    <td>@claim.Month</td>
+                    <td>@claim.TotalHours</td>
+                    <td>R @claim.TotalAmount.ToString("N2")</td>
+                    <td>
+                        @if (claim.Approvals != null && claim.Approvals.Any())
+                        {
+                            <ul>
+                                @foreach (var approval in claim.Approvals.OrderBy(a => a.Date))
+                                {
+                                    <li>@approval.Role: @approval.Decision on @approval.Date.ToShortDateString()</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span>No approvals yet</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-action="DownloadReport" method="post">
+        <button type="submit" class="btn btn-primary mt-3">Download CSV Report</button>
+    </form>
+}

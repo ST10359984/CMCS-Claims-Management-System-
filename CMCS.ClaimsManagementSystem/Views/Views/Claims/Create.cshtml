@@ -1,0 +1,42 @@
+@model Program.Models.Claim
+
+@{
+    ViewData["Title"] = "Create Claim";
+}
+
+<h2>Create Claim</h2>
+
+<form asp-action="Create" method="post" id="claimForm">
+    <div id="amountsContainer">
+        <div class="amountRow">
+            <label>Amount</label>
+            <input type="number" name="Amounts[]" class="amountInput" />
+        </div>
+    </div>
+    <button type="button" id="addAmount">Add Amount</button>
+    <div>
+        <label>Total</label>
+        <input type="text" id="total" readonly />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+    function updateTotal() {
+        let total = 0;
+        $('.amountInput').each(function(){
+            let val = parseFloat($(this).val());
+            if(!isNaN(val)) total += val;
+        });
+        $('#total').val(total.toFixed(2));
+    }
+
+    $('#amountsContainer').on('input', '.amountInput', updateTotal);
+
+    $('#addAmount').click(function(){
+        $('#amountsContainer').append('<div class="amountRow"><label>Amount</label><input type="number" name="Amounts[]" class="amountInput" /></div>');
+    });
+});
+</script>
